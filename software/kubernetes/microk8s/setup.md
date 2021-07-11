@@ -12,7 +12,7 @@
 
 # 1. Install
 
-The ```kubectl``` and MicroK8s installs must be version compatible; see:
+The `kubectl` and MicroK8s installs must be version compatible; see:
 https://kubernetes.io/releases/version-skew-policy/#kubectl
 
 ## 1.1. MicroK8s
@@ -20,7 +20,7 @@ https://kubernetes.io/releases/version-skew-policy/#kubectl
 Some install options are:
 
 * Select in Ubuntu installer's default software package list
-* Install with ```snap``` as per https://microk8s.io/docs
+* Install with `snap` as per https://microk8s.io/docs
 
 To show MicroK8s version:
 
@@ -33,7 +33,7 @@ snap info microk8s | grep installed
 
 Some install options are:
 
-* Use version installed by macOS [```Docker```](https://www.docker.com/products/docker-desktop) installer
+* Use version installed by macOS [Docker](https://www.docker.com/products/docker-desktop) installer
 * Install manually as per https://kubernetes.io/docs/tasks/tools/#kubectl
 
 To show kubectl version:
@@ -44,7 +44,7 @@ kubectl version
 
 # 2. Enable Services
 
-Run ```microk8s enable``` to enable services; for example:
+Run `microk8s enable` to enable services; for example:
 
 ```
 microk8s enable dns dashboard storage
@@ -58,7 +58,7 @@ View service status with:
 microk8s status
 ```
 
-Use ```microk8s kubectl``` to run local operations; for example:
+Use `microk8s kubectl` to run local operations; for example:
 
 ```
 microk8s kubectl get all --all-namespaces
@@ -68,15 +68,16 @@ microk8s kubectl get all --all-namespaces
 
 ## 3.1. Get kubeconfig file
 
-Obtain ```kubeconfig``` file on MicroK8s host with:
+Obtain `kubeconfig` file on MicroK8s host with:
 
 ```
 microk8s config > "${HOME}/microk8s-config"
+chmod 600 "${HOME}/microk8s-config"
 ```
 
 ## 3.2. Use kubeconfig file
 
-Copy ```kubeconfig``` file to ```kubectl``` host and use as follows:
+Copy `kubeconfig` file to `kubectl` host and use as follows:
 
 ```
 kubectl --kubeconfig=microk8s-config version
@@ -108,4 +109,4 @@ Login with a web browser at: [https://localhost:8443](https://localhost:8443)
 # 4. References
 
 * MicroK8s: https://microk8s.io
-* ```kubectl```: https://kubernetes.io/docs/reference/kubectl/
+* `kubectl`: https://kubernetes.io/docs/reference/kubectl/
