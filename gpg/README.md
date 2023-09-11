@@ -95,14 +95,14 @@ RECIPIENT_PUBLIC_KEY_EMAIL='someone@example.com'
 ```
 
 ```bash
-# Must have imported recipient's public key first
+# Ensure recipient's public key has been imported first
 # Use of --sign is optional
 gpg \
   --encrypt \
   --sign \
-  --output "${FILENAME_TO_ENCRYPT:?}.gpg" \
-  --recipient "${GPG_KEY_EMAIL:?}" \
-  "${FILENAME_TO_ENCRYPT:?}"
+  --output "${SOURCE_FILE:?}.gpg" \
+  --recipient "${RECIPIENT_PUBLIC_KEY_EMAIL:?}" \
+  "${SOURCE_FILE:?}"
 ```
 
 The warning:
@@ -112,7 +112,7 @@ The warning:
 Can be suppressed with:
 
 ```bash
-  --trust-model always
+--trust-model always
 ```
 
 ## File Decryption
