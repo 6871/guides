@@ -155,7 +155,7 @@ gpg \
 
 ```bash
 MESSAGE='The quick brown
-fox jumped over
+fox jumps over
 the lazy dog'
 
 echo -n "${MESSAGE:?}" | gpg --local-user "${GPG_KEY_ID:?}" --clearsign
