@@ -1,0 +1,41 @@
+# Requires:
+#   docker login registry.redhat.io
+# See:
+#   https://developers.redhat.com
+networks:
+  rh-sso-network:
+volumes:
+  rh-sso-db-volume:
+services:
+  # Authentication server
+  rh-sso:
+    image: registry.redhat.io/rh-sso-7/sso76-openshift-rhel8
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: rh-sso-db
+      DB_DATABASE: rh-sso-db
+      DB_USER: rh-sso-db-user
+      DB_PASSWORD: rh-sso-db-user-password
+      KEYSTORE_PASSWORD: admin
+      SSO_ADMIN_USERNAME: admin
+      SSO_ADMIN_PASSWORD: admin
+      SSO_ADMIN_CONSOLE: true
+    ports:
+      # Match internal and external port to avoid "iss claim not valid" errors
+      - "8080:8080"
+    depends_on:
+      - rh-sso-db
+    networks:
+      - rh-sso-network
+  # Authentication server database
+  rh-sso-db:
+    image: postgres:13
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_DB: rh-sso-db
+      POSTGRES_USER: rh-sso-db-user
+      POSTGRES_PASSWORD: rh-sso-db-user-password
+    volumes:
+      - rh-sso-db-volume:/var/lib/postgresql/data
+    networks:
+      - rh-sso-network
