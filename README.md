@@ -8,3 +8,4 @@ A collection of how-to guides:
 | [GPG](gpg/README.md)                      | Key management; encrypting and signing data                             |
 | [Java](java/README.md)                    | JDK providers; Open JDK install notes                                   |
 | [MicroK8s](kubernetes/microk8s/README.md) | MicroK8s install notes                                                  |
+| [PostgreSQL](postgres/README.md)          | PostgreSQL how-to guide; example `compose.yaml` file                    |

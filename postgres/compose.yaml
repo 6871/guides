@@ -1,0 +1,25 @@
+# Default credentials can be overriden before docker compose up; for example:
+# export POSTGRES_USER=admin
+# export POSTGRES_PASSWORD="$(openssl rand -base64 48)"
+volumes:
+  postgres_volume:
+services:
+  postgres-db:
+    # Official PostgreSQL image: https://hub.docker.com/_/postgres
+    image: "postgres:13"
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER:-postgres}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-postgres_password}"
+      POSTGRES_DB: postgres_db
+      # The default PGDATA value of /var/lib/postgresql/data must be changed
+      # before database data can be persisted to a volume
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      # Note that the above PGDATA change is required for this to work
+      - postgres_volume:/var/lib/postgresql/data
+      # Mount example sql and bash directories at /examples in the container
+      - ./sql:/examples/sql:ro
+      - ./bash:/examples/bash:ro
+    ports:
+      # Expose the default PostgreSQL port on the host
+      - "5432:5432"
