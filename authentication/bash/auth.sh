@@ -31,7 +31,10 @@ function base64_pad4 {
 # Read JSON from STDIN and print the value of the access_token key to STDOUT.
 function json_get_access_token {
   local str_in
-  read -r str_in
+  local line
+  while IFS= read -r line || [ -n "${line}" ]; do
+    local str_in="${str_in}${line}"$'\n'
+  done
   local code='import json,sys;print(json.load(sys.stdin)["access_token"])'
   echo -n "${str_in}" | python3 -c "${code:?}"
 }
@@ -39,8 +42,11 @@ function json_get_access_token {
 # Read JSON input on STDIN and pretty-print it to STDOUT using Python.
 function json_format {
   local str_in
-  read -r str_in
-  echo -n "${str_in}" | python3 -m json.tool
+  local line
+  while IFS= read -r line || [ -n "${line}" ]; do
+    local str_in="${str_in}${line}"$'\n'
+  done
+  echo -n "${str_in%$'\n'}" | python3 -m json.tool
 }
 
 # Login to AUTH_HOST and output OIDC token to STDOUT.
@@ -83,11 +89,11 @@ function auth_verify {
 function auth_decode_access_token {
   local str_in
   read -r str_in
-  printf '--- JWT Header ---------------------------------------------\n'
+  echo '--- JWT Header ---------------------------------------------'
   echo "${str_in}" | cut -d '.' -f1 | base64_pad4 | base64 --decode | json_format
-  printf '--- JWT Payload --------------------------------------------\n'
+  echo '--- JWT Payload --------------------------------------------'
   echo "${str_in}" | cut -d '.' -f2 | base64_pad4 | base64 --decode | json_format
-  printf '--- JWT Signature ------------------------------------------\n'
+  echo '--- JWT Signature ------------------------------------------'
   echo "${str_in}" | cut -d '.' -f3
-  printf '------------------------------------------------------------\n'
+  echo '------------------------------------------------------------'
 }
