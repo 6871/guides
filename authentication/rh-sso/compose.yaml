@@ -26,7 +26,14 @@ services:
     depends_on:
       - rh-sso-db
     networks:
-      - rh-sso-network
+      rh-sso-network:
+        aliases:
+          # Without this alias, a service trying to call this service with a
+          # URL such as http://rh-sso.local.6871.uk:8080/auth/realms (i.e. one
+          # that resolves to 127.0.0.1) would call itself (i.e. 127.0.0.1); to
+          # fix this, the alias maps host name rh-sso.local.6871.uk to the
+          # rh-sso service instead
+          - rh-sso.local.6871.uk
   # Authentication server database
   rh-sso-db:
     image: postgres:13
@@ -39,3 +46,72 @@ services:
       - rh-sso-db-volume:/var/lib/postgresql/data
     networks:
       - rh-sso-network
+  # Run-once container that waits for the rh-sso service to start, then runs
+  # some example authentication functions
+  auth-cli-demo:
+    image: ubuntu
+    restart: no
+    depends_on:
+      - rh-sso
+    environment:
+      AUTH_HOST: http://rh-sso.local.6871.uk:8080
+      AUTH_REALM: master
+      AUTH_USERNAME: admin
+      AUTH_PASSWORD: admin
+      AUTH_CLIENT_ID: admin-cli
+    volumes:
+      # Mount example sql and bash directories in /examples in the container
+      - ../bash:/examples/bash:ro
+    networks:
+      - rh-sso-network
+    entrypoint: ["/bin/bash"]
+    command:
+      - "-c"
+      - |
+        set -e
+        set -o pipefail
+        
+        printf 'Installing curl...\n'
+        apt-get update
+        apt-get install --yes curl
+        
+        printf 'Installing python3...\n'
+        apt-get install --yes python3
+        python3 --version
+        
+        printf 'Waiting for RH SSO...\n'
+        MAX_RETRIES=60
+        COMPLETED_OK='NO'
+        for ((i = 0; i < $${MAX_RETRIES:?}; i++)); do
+          printf 'Connection attempt %s/%s\n' "$((i + 1))" "$${MAX_RETRIES:?}"
+          if curl "$${AUTH_HOST:?}"; then
+            printf 'Connection established\n'
+            COMPLETED_OK='YES'
+            break
+          else
+            sleep 1
+          fi
+        done
+        
+        if [ "$${COMPLETED_OK:?}" != 'YES' ]; then
+          printf 'Timed out waiting for RH SSO, exiting with error...\n'
+          exit 1
+        fi
+        
+        printf 'Sourcing auth.sh...\n'
+        source /examples/bash/auth.sh
+        
+        printf 'Obtain and print authentication token...\n'
+        auth_login
+        echo
+        
+        printf 'Obtain and print formatted authentication token...\n'
+        auth_login | json_format
+        echo
+        
+        printf 'Obtain and print access token...\n'
+        auth_login | json_get_access_token
+        echo
+        
+        printf 'Obtain, print and decode access token...\n'
+        auth_login | json_get_access_token | auth_decode_access_token
