@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Functions to obtain, process and verify JWT access tokens.
+# JSON functions need python3 to be installed.
 # 1: Source this script with:
 #     source ./auth_cli.sh
 # 2: Set the following mandatory environment variables for your host:

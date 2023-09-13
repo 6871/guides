@@ -5,10 +5,10 @@ Single Sign-On server using the command line.
 
 The following configuration files are used:
 
-| File                                  | Description                                                      |
-|---------------------------------------|------------------------------------------------------------------|
-| [`compose.yaml`](rh-sso/compose.yaml) | Docker Compose file to run a Red Hat Single Sign-On server       |
-| [`auth.sh`](bash/auth.sh)             | Functions to get, view and validate authentication server tokens |
+| File                                  | Description                                                                                                          |
+|---------------------------------------|----------------------------------------------------------------------------------------------------------------------|
+| [`compose.yaml`](rh-sso/compose.yaml) | Docker Compose file to run a Red Hat Single Sign-On server                                                           |
+| [`auth.sh`](bash/auth.sh)             | Functions to get, view and validate authentication server tokens<br>⚠️ JSON functions need `python3` to be installed |
 
 # Setup Steps
 
