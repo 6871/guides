@@ -26,11 +26,12 @@ The following configuration files are used:
 3. Start the docker compose services:
 
     ```bash 
-    docker compose --file rh-sso/compose.yaml up --detach
-    docker compose --file rh-sso/compose.yaml logs --follow
+    docker compose --file rh-sso/compose.yaml up --detach \
+    && docker compose --file rh-sso/compose.yaml logs --follow
+    ```
     
-    # To stop; use --volumes to remove data saved in service volumes
-    docker compose --file rh-sso/compose.yaml down
+    ```bash
+    # To remove the service containers and volumes
     docker compose --file rh-sso/compose.yaml down --volumes
     ```
 
@@ -69,7 +70,7 @@ The following configuration files are used:
     ```
 
 7. Use the [`auth.sh`](bash/auth.sh) functions to get, view and verify
-    authentication tokens: 
+    authentication tokens:
 
     ```bash
     # Get and view an authentication token
@@ -98,28 +99,45 @@ The following configuration files are used:
     http://rh-sso.local.6871.uk:8080/auth/realms/master/protocol/openid-connect/token
     --- JWT Header ---------------------------------------------
     {
-    "alg": "RS256",
-    "typ": "JWT",
-    "kid": "etzQWQ9xmIGoaCR8xdEGMkHX2w8AcvdkKYajZo6ByLE"
+        "alg": "RS256",
+        "typ": "JWT",
+        "kid": "etzQWQ9xmIGoaCR8xdEGMkHX2w8AcvdkKYajZo6ByLE"
     }
     --- JWT Payload --------------------------------------------
     {
-    "exp": 1694557222,
-    "iat": 1694557162,
-    "jti": "94ab3d21-b160-4b92-bcdd-c1e7a4e07549",
-    "iss": "http://rh-sso.local.6871.uk:8080/auth/realms/master",
-    "sub": "850e9ae0-be6b-4772-b303-6469d954c335",
-    "typ": "Bearer",
-    "azp": "admin-cli",
-    "session_state": "fa6a06a2-311e-4aaf-84fe-142a0dec245a",
-    "acr": "1",
-    "scope": "email profile",
-    "sid": "fa6a06a2-311e-4aaf-84fe-142a0dec245a",
-    "email_verified": false,
-    "preferred_username": "admin"
+        "exp": 1694557222,
+        "iat": 1694557162,
+        "jti": "94ab3d21-b160-4b92-bcdd-c1e7a4e07549",
+        "iss": "http://rh-sso.local.6871.uk:8080/auth/realms/master",
+        "sub": "850e9ae0-be6b-4772-b303-6469d954c335",
+        "typ": "Bearer",
+        "azp": "admin-cli",
+        "session_state": "fa6a06a2-311e-4aaf-84fe-142a0dec245a",
+        "acr": "1",
+        "scope": "email profile",
+        "sid": "fa6a06a2-311e-4aaf-84fe-142a0dec245a",
+        "email_verified": false,
+        "preferred_username": "admin"
     }
     --- JWT Signature ------------------------------------------
     AGTBhhq8q8vPUFmebaa0a_cyqQHMzDG5xvuTjshWj8i8UzeVY9jVsjvIg6a1KIea2liDxvYlFPQgFhUabRBhj6HqazovmpcLLAJCPAaFXM5ewwb-HP9ZeHKZT9cJBuAJobFzyMH-9cFwk7HKZ3v9BASjp_ctz-VO7zOGKO5TRqYi1FWCI-1qeTHGKfBnm0jBy_wXn4JKKiKmEQtZpDLc_zVzFtV8mk03-iT31qBJEm6cr1u3QvEod7cEZ_91wk4Ids_g97k32MRjnj9eGOfn__Je5tVyoAw6hVGmvWRXVLKHPTwxyMRyuY1kf4jmF-XgaEioREILgNp-TkH3lc_RGg
     ------------------------------------------------------------
     %
     ```
+
+# Standalone Operation
+
+Arbitrary token strings can be decoded as follows:
+
+```bash
+# Add functions to current shell
+source ./bash/auth.sh
+```
+
+```bash
+echo "${JWT_TOKEN:?}" | auth_decode_access_token
+```
+
+```bash
+echo "${AUTH_TOKEN:?}" | json_get_access_token | auth_decode_access_token
+```

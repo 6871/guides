@@ -115,3 +115,19 @@ services:
         
         printf 'Obtain, print and decode access token...\n'
         auth_login | json_get_access_token | auth_decode_access_token
+
+        printf 'Obtain and verify access token...\n'
+        if auth_login | json_get_access_token | auth_verify | json_format; then
+          echo 'OK: token validation was successful'
+        else
+          echo 'Error: token validation failed'
+          exit 1
+        fi
+        
+        printf 'Attempt to verify with an invalid access token...\n'
+        if echo 'AN-INVALID-ACCESS-TOKEN' | auth_verify | json_format; then
+          echo 'Error: token did not fail to validate'
+          exit 1
+        else
+          echo 'OK: invalid token was detected'
+        fi
