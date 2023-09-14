@@ -2,6 +2,13 @@
 #   docker login registry.redhat.io
 # See:
 #   https://developers.redhat.com
+# To create .env file for this compose.yaml file:
+#   ./create_env_file.sh > .env
+# To run this file (from this file's directory):
+#   docker compose up --detach
+#   docker compose logs --follow
+# To remove containers and volumes:
+#   docker compose down --volumes
 networks:
   rh-sso-network:
 volumes:
@@ -14,11 +21,11 @@ services:
       DB_VENDOR: POSTGRES
       DB_ADDR: rh-sso-db
       DB_DATABASE: rh-sso-db
-      DB_USER: rh-sso-db-user
-      DB_PASSWORD: rh-sso-db-user-password
-      KEYSTORE_PASSWORD: admin
-      SSO_ADMIN_USERNAME: admin
-      SSO_ADMIN_PASSWORD: admin
+      DB_USER: "${RH_SSO_DB_USER:?}"
+      DB_PASSWORD: "${RH_SSO_DB_USER_PASSWORD:?}"
+      KEYSTORE_PASSWORD: "${RH_SSO_KEYSTORE_PASSWORD:?}"
+      SSO_ADMIN_USERNAME: "${RH_SSO_ADMIN_USER:?}"
+      SSO_ADMIN_PASSWORD: "${RH_SSO_ADMIN_USER_PASSWORD:?}"
       SSO_ADMIN_CONSOLE: true
     ports:
       # Match internal and external port to avoid "iss claim not valid" errors
@@ -40,8 +47,8 @@ services:
     environment:
       PGDATA: /var/lib/postgresql/data/pgdata
       POSTGRES_DB: rh-sso-db
-      POSTGRES_USER: rh-sso-db-user
-      POSTGRES_PASSWORD: rh-sso-db-user-password
+      POSTGRES_USER: "${RH_SSO_DB_USER:?}"
+      POSTGRES_PASSWORD: "${RH_SSO_DB_USER_PASSWORD:?}"
     volumes:
       - rh-sso-db-volume:/var/lib/postgresql/data
     networks:
@@ -56,8 +63,8 @@ services:
     environment:
       AUTH_HOST: http://rh-sso.local.6871.uk:8080
       AUTH_REALM: master
-      AUTH_USERNAME: admin
-      AUTH_PASSWORD: admin
+      AUTH_USERNAME: "${RH_SSO_ADMIN_USER:?}"
+      AUTH_PASSWORD: "${RH_SSO_ADMIN_USER_PASSWORD:?}"
       AUTH_CLIENT_ID: admin-cli
     volumes:
       # Mount example sql and bash directories in /examples in the container
