@@ -49,10 +49,29 @@ function json_format {
   echo -n "${str_in%$'\n'}" | python3 -m json.tool
 }
 
+function auth_base_url {
+  local realm_prefix
+  local VENDOR_RH="rh-sso"
+  local VENDOR_KC="keycloak"
+
+  if [[ "${AUTH_VENDOR}" == "${VENDOR_RH:?}" ]]; then
+    realm_prefix='/auth'
+  elif [[ "${AUTH_VENDOR}" == "${VENDOR_KC:?}" ]]; then
+    realm_prefix=''
+  else
+    printf 'Error: AUTH_VENDOR="%s" is not valid; use one of: %s\n' \
+        "${AUTH_VENDOR}" "{ ${VENDOR_RH:?} | ${VENDOR_KC:?} }"
+    return 1
+  fi
+
+  printf '%s%s/realms/%s/protocol/openid-connect' \
+      "${AUTH_HOST:?}" "${realm_prefix}" "${AUTH_REALM:?}"
+}
+
 # Login to AUTH_HOST and output OIDC token to STDOUT.
 function auth_login {
-  local realm_prefix="${1:-/auth}"  # "" for Keycloak, /auth for Red Hat SSO
-  local login_url="${AUTH_HOST:?}${realm_prefix}/realms/${AUTH_REALM:?}/protocol/openid-connect/token"
+  local login_url
+  login_url="$(auth_base_url)/token"
   printf 'login_url:\n%s\n' "${login_url:?}" >&2
   curl \
     --request POST \
@@ -69,8 +88,8 @@ function auth_login {
 
 # Read JWT access token from STDIN and verify it against AUTH_HOST.
 function auth_verify {
-  local realm_prefix="${1:-/auth}"  # "" for Keycloak, /auth for Red Hat SSO
-  local verify_url="${AUTH_HOST:?}${realm_prefix}/realms/${AUTH_REALM:?}/protocol/openid-connect/userinfo"
+  local verify_url
+  verify_url="$(auth_base_url)/userinfo"
   printf 'verify_url:\n%s\n' "${verify_url}" >&2
   local str_in
   read -r str_in
