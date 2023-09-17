@@ -62,6 +62,7 @@ The following configuration files are used:
     AUTH_REALM='master'
     AUTH_USERNAME='admin'
     AUTH_PASSWORD='admin'
+    AUTH_VENDOR='rh-sso'
     ```
    
     ```bash
