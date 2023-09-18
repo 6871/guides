@@ -1,16 +1,20 @@
 #!/usr/bin/env bash
-# Functions to obtain, process and verify JWT access tokens.
-# JSON functions need python3 to be installed.
+# A collection of functions to obtain, view and verify OIDC JWT access tokens.
+# Functions with prefix json_ require python3 to be on the path to work.
 # 1: Source this script with:
 #     source ./auth_cli.sh
 # 2: Set the following mandatory environment variables for your host:
 #     AUTH_HOST='https://example.com'
-#     AUTH_REALM='master'
+#     AUTH_VENDOR='keycloak'  # keycloak or rh-sso
+#     AUTH_REALM='master'     # master requires AUTH_CLIENT_ID='admin-cli'
 #     AUTH_USERNAME='admin'
-#     AUTH_PASSWORD='admin'
+#     AUTH_PASSWORD='...'
 # 3: Optionally set the following environment variables:
+#     AUTH_SCOPE='openid'  # may be required with AUTH_VENDOR='keycloak'
+#     AUTH_ALLOW_INSECURE_HTTPS='true'
 #     AUTH_CLIENT_ID='admin-cli'
-#     AUTH_CLIENT_SECRET=''
+#     AUTH_CLIENT_SECRET='...'
+#     AUTH_CURL_VERBOSE='true'
 # 4: To get an OIDC token, extract JWT access_token, then decode it:
 #     auth_login | json_get_access_token | auth_decode_access_token
 # 5: To get an OIDC token, extract JWT access_token, then verify it:
@@ -33,7 +37,7 @@ function json_get_access_token {
   local str_in
   local line
   while IFS= read -r line || [ -n "${line}" ]; do
-    local str_in="${str_in}${line}"$'\n'
+    str_in="${str_in}${line}"$'\n'
   done
   local code='import json,sys;print(json.load(sys.stdin)["access_token"])'
   echo -n "${str_in}" | python3 -c "${code:?}"
@@ -44,23 +48,22 @@ function json_format {
   local str_in
   local line
   while IFS= read -r line || [ -n "${line}" ]; do
-    local str_in="${str_in}${line}"$'\n'
+    str_in="${str_in}${line}"$'\n'
   done
   echo -n "${str_in%$'\n'}" | python3 -m json.tool
 }
 
+# Determine the host URL and print it to STDOUT (or return error).
 function auth_base_url {
   local realm_prefix
-  local VENDOR_RH="rh-sso"
-  local VENDOR_KC="keycloak"
 
-  if [[ "${AUTH_VENDOR}" == "${VENDOR_RH:?}" ]]; then
+  if [[ "${AUTH_VENDOR}" == 'rh-sso' ]]; then
     realm_prefix='/auth'
-  elif [[ "${AUTH_VENDOR}" == "${VENDOR_KC:?}" ]]; then
+  elif [[ "${AUTH_VENDOR}" == 'keycloak' ]]; then
     realm_prefix=''
   else
     printf 'Error: AUTH_VENDOR="%s" is not valid; use one of: %s\n' \
-        "${AUTH_VENDOR}" "{ ${VENDOR_RH:?} | ${VENDOR_KC:?} }"
+        "${AUTH_VENDOR}" '{ rh-sso | keycloak }'
     return 1
   fi
 
@@ -73,35 +76,88 @@ function auth_login {
   local login_url
   login_url="$(auth_base_url)/token"
   printf 'login_url:\n%s\n' "${login_url:?}" >&2
-  curl \
-    --request POST \
-    --silent \
-    --show-error \
-    --fail-with-body \
-    --data-urlencode "client_id=${AUTH_CLIENT_ID}" \
-    --data-urlencode "client_secret=${AUTH_CLIENT_SECRET}" \
-    --data-urlencode "username=${AUTH_USERNAME:?}" \
-    --data-urlencode "password=${AUTH_PASSWORD:?}" \
+
+  curl_arguments=()
+
+  if [[ "${AUTH_CURL_VERBOSE}" == "true" ]]; then
+    curl_arguments+=('--verbose')
+  fi
+
+  if [[ "${AUTH_ALLOW_INSECURE_HTTPS}" == "true" ]]; then
+    curl_arguments+=('--insecure')
+  fi
+
+  curl_arguments+=(
+    '--request' 'POST'
+    '--silent'
+    '--show-error'
+    '--fail-with-body'
+  )
+
+  if [ -v AUTH_CLIENT_ID ]; then
+    curl_arguments+=(--data-urlencode "client_id=${AUTH_CLIENT_ID}")
+  fi
+
+  # e.g. keycloak admin calls to master realm require scope=openid
+  if [ -v AUTH_SCOPE ]; then
+    curl_arguments+=(--data-urlencode "scope=${AUTH_SCOPE}")
+  else
+    if [[ "${AUTH_VENDOR}" == 'keycloak' ]]; then
+      printf 'Warning: keycloak login token obtained without' >&2
+      printf ' setting AUTH_SCOPE=openid may cause 403 errors in' >&2
+      printf ' subsequent calls\n' >&2
+    fi
+  fi
+
+  if [ -v AUTH_CLIENT_SECRET ]; then
+    curl_arguments+=(--data-urlencode "client_secret=${AUTH_CLIENT_SECRET}")
+  fi
+
+  curl_arguments+=(
     --data "grant_type=password" \
+    --data-urlencode "username=${AUTH_USERNAME}"
+    --data-urlencode "password=${AUTH_PASSWORD}"
     "${login_url:?}"
+  )
+
+  curl "${curl_arguments[@]}"
 }
 
 # Read JWT access token from STDIN and verify it against AUTH_HOST.
 function auth_verify {
+  local str_in
+  local line
+  while IFS= read -r line || [ -n "${line}" ]; do
+    str_in="${str_in}${line}"$'\n'
+  done
+
   local verify_url
   verify_url="$(auth_base_url)/userinfo"
   printf 'verify_url:\n%s\n' "${verify_url}" >&2
-  local str_in
-  read -r str_in
+
   local auth_header="Authorization: Bearer ${str_in}"
   printf 'auth_header:\n%s\n' "${auth_header}" >&2
-  curl \
-    --request POST \
-    --silent \
-    --show-error \
-    --fail-with-body \
-    --header "${auth_header:?}" \
+
+  curl_arguments=()
+
+  if [[ "${AUTH_CURL_VERBOSE}" == "true" ]]; then
+    curl_arguments+=('--verbose')
+  fi
+
+  if [[ "${AUTH_ALLOW_INSECURE_HTTPS}" == "true" ]]; then
+    curl_arguments+=('--insecure')
+  fi
+
+  curl_arguments+=(
+    --request POST
+    --silent
+    --show-error
+    --fail-with-body
+    --header "${auth_header:?}"
     "${verify_url:?}"
+  )
+
+  curl "${curl_arguments[@]}"
 }
 
 # Read JWT access token from STDIN and decode it to STDOUT.
