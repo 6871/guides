@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# A collection of functions to obtain, view and verify OIDC JWT access tokens.
-# Functions with prefix json_ require python3 to be on the path to work.
+# A collection of functions to obtain, view and verify authentication tokens.
+# Functions with prefix json_ require python3 to work.
 # 1: Source this script with:
-#     source ./auth_cli.sh
+#     source ./auth.sh
 # 2: Set the following mandatory environment variables for your host:
 #     AUTH_HOST='https://example.com'
 #     AUTH_VENDOR='keycloak'  # keycloak or rh-sso
@@ -15,9 +15,9 @@
 #     AUTH_CLIENT_ID='admin-cli'
 #     AUTH_CLIENT_SECRET='...'
 #     AUTH_CURL_VERBOSE='true'
-# 4: To get an OIDC token, extract JWT access_token, then decode it:
-#     auth_login | json_get_access_token | auth_decode_access_token
-# 5: To get an OIDC token, extract JWT access_token, then verify it:
+# 4: To get an OIDC token, extract access_token (JWT), then decode it:
+#     auth_login | json_get_access_token | auth_decode_jwt
+# 5: To get an OIDC token, extract access_token (JWT), then verify it:
 #     auth_login | json_get_access_token | auth_verify
 
 # Read string from STDIN; if it's not a multiple of 4 chars, pad it with '='
@@ -123,7 +123,7 @@ function auth_login {
   curl "${curl_arguments[@]}"
 }
 
-# Read JWT access token from STDIN and verify it against AUTH_HOST.
+# Read JWT access token from STDIN and verify it with AUTH_HOST.
 function auth_verify {
   local str_in
   local line
@@ -160,8 +160,8 @@ function auth_verify {
   curl "${curl_arguments[@]}"
 }
 
-# Read JWT access token from STDIN and decode it to STDOUT.
-function auth_decode_access_token {
+# Read JWT from STDIN, print decoded JWT to STDOUT.
+function auth_decode_jwt {
   local str_in
   read -r str_in
   echo '--- JWT Header ---------------------------------------------'

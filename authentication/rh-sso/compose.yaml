@@ -16,7 +16,7 @@ volumes:
 services:
   # Authentication server
   rh-sso:
-    image: registry.redhat.io/rh-sso-7/sso76-openshift-rhel8
+    image: registry.redhat.io/rh-sso-7/sso76-openshift-rhel8:7.6-27
     environment:
       DB_VENDOR: POSTGRES
       DB_ADDR: rh-sso-db
@@ -121,7 +121,7 @@ services:
         echo
         
         printf 'Obtain, print and decode access token...\n'
-        auth_login | json_get_access_token | auth_decode_access_token
+        auth_login | json_get_access_token | auth_decode_jwt
 
         printf 'Obtain and verify access token...\n'
         if auth_login | json_get_access_token | auth_verify | json_format; then

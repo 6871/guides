@@ -1,5 +1,4 @@
 # See:
-#   https://hub.docker.com/r/jboss/keycloak
 #   https://www.keycloak.org/server/containers
 # To create .env file for this compose.yaml file:
 #   ./create_env_file.sh > .env
@@ -205,7 +204,7 @@ services:
         echo
         
         printf 'Obtain, print and decode access token...\n'
-        auth_login | json_get_access_token | auth_decode_access_token
+        auth_login | json_get_access_token | auth_decode_jwt
 
         printf 'Obtain and verify access token...\n'
         if auth_login | json_get_access_token | auth_verify; then
