@@ -172,3 +172,58 @@ function auth_decode_jwt {
   echo "${str_in}" | cut -d '.' -f3
   echo '------------------------------------------------------------'
 }
+
+# Function to unset empty environment variables.
+function auth_unset_empty_env_vars {
+  if [ -n "${AUTH_HOST+x}" ] && [ -z "${AUTH_HOST}" ]; then
+    unset AUTH_HOST
+  fi
+  if [ -n "${AUTH_VENDOR+x}" ] && [ -z "${AUTH_VENDOR}" ]; then
+    unset AUTH_VENDOR
+  fi
+  if [ -n "${AUTH_REALM+x}" ] && [ -z "${AUTH_REALM}" ]; then
+    unset AUTH_REALM
+  fi
+  if [ -n "${AUTH_USERNAME+x}" ] && [ -z "${AUTH_USERNAME}" ]; then
+    unset AUTH_USERNAME
+  fi
+  if [ -n "${AUTH_PASSWORD+x}" ] && [ -z "${AUTH_PASSWORD}" ]; then
+    unset AUTH_PASSWORD
+  fi
+  if [ -n "${AUTH_CLIENT_ID+x}" ] && [ -z "${AUTH_CLIENT_ID}" ]; then
+    unset AUTH_CLIENT_ID
+  fi
+  if [ -n "${AUTH_CLIENT_SECRET+x}" ] && [ -z "${AUTH_CLIENT_SECRET}" ]; then
+    unset AUTH_CLIENT_SECRET
+  fi
+  if [ -n "${AUTH_SCOPE+x}" ] && [ -z "${AUTH_SCOPE}" ]; then
+    unset AUTH_SCOPE
+  fi
+  if [ -n "${AUTH_ALLOW_INSECURE_HTTPS+x}" ] \
+      && [ -z "${AUTH_ALLOW_INSECURE_HTTPS}" ]; then
+    unset AUTH_ALLOW_INSECURE_HTTPS
+  fi
+  if [ -n "${AUTH_CURL_VERBOSE+x}" ] && [ -z "${AUTH_CURL_VERBOSE}" ]; then
+    unset AUTH_CURL_VERBOSE
+  fi
+}
+
+# Function to set environment variables used by login and verify functions.
+function auth_set_env_vars {
+  printf 'Enter server details (empty value unsets variable):\n'
+  printf 'AUTH_HOST (e.g. "https://example.com") : ' && read -r AUTH_HOST
+  printf 'AUTH_VENDOR  { "keycloak" | "rh-sso" } : ' && read -r AUTH_VENDOR
+  printf 'AUTH_REALM             (e.g. "master") : ' && read -r AUTH_REALM
+  printf 'AUTH_USERNAME           (e.g. "admin") : ' && read -r AUTH_USERNAME
+  printf 'AUTH_PASSWORD                          : '
+  read -r -s AUTH_PASSWORD && echo
+  printf 'AUTH_CLIENT_ID      (e.g. "admin-cli") : ' && read -r AUTH_CLIENT_ID
+  printf 'AUTH_CLIENT_SECRET                     : '
+  read -r -s AUTH_CLIENT_SECRET && echo
+  printf 'AUTH_SCOPE (e.g. "openid" on Keycloak) : ' && read -r AUTH_SCOPE
+  printf 'AUTH_ALLOW_INSECURE_HTTPS [{ "true" }] : '
+  read -r AUTH_ALLOW_INSECURE_HTTPS
+  printf 'AUTH_CURL_VERBOSE         [{ "true" }] : '
+  read -r AUTH_CURL_VERBOSE
+  auth_unset_empty_env_vars
+}

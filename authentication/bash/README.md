@@ -1,16 +1,27 @@
 # CLI Authentication Functions
 
-CLI functions to get, view and verify authentication tokens using `curl`:
+CLI functions to get, view and verify authentication tokens.
+
+* [Functions](#functions)
+* [Installing](#installing)
+* [Decoding & Printing JWT Strings](#decoding--printing-jwt-strings)
+* [Environment Variables](#environment-variables)
+* [Get & Verify Server Tokens](#get--verify-server-tokens)
+
+# Functions
 
 | Function                            | Description                                                                                           |
 |-------------------------------------|-------------------------------------------------------------------------------------------------------|
-| `auth_login`                        | Log in to `AUTH_HOST` as `AUTH_USERNAME` with `AUTH_PASSWORD` and print acquired OIDC token to STDOUT |
-| `json_get_access_token`<sup>1</sup> | Read an OIDC token JSON string from STDIN, print `access_token` field JWT to STDOUT                   |
+| `auth_set_env_vars`                 | Interactive prompts to set required environment variables                                             |
+| `auth_login`<sup>1</sup>            | Log in to `AUTH_HOST` as `AUTH_USERNAME` with `AUTH_PASSWORD` and print acquired OIDC token to STDOUT |
+| `json_get_access_token`<sup>2</sup> | Read an OIDC token JSON string from STDIN, print `access_token` field JWT to STDOUT                   |
 | `auth_decode_jwt`                   | Read a JWT string from STDIN, print decoded JWT to STDOUT                                             |
-| `auth_verify`                       | Read a JWT string from STDIN and verify it with `AUTH_HOST`                                           |
-| `json_format`<sup>1</sup>           | Read a JSON string from STDIN and pretty-print it to STDOUT                                           | 
+| `auth_verify`<sup>1</sup>           | Read a JWT string from STDIN and verify it with `AUTH_HOST`                                           |
+| `json_format`<sup>2</sup>           | Read a JSON string from STDIN and pretty-print it to STDOUT                                           | 
 
-> <sup>1</sup>️ `json_` functions require a `python3` install
+> <sup>1</sup>️ see section [Environment Variables](#environment-variables)
+
+> <sup>2</sup>️ `json_` functions require a `python3` install
  
 # Installing
 
@@ -22,7 +33,7 @@ current shell; e.g.:
 source ./auth.sh
 ```
 
-# JWT Token Decoding
+# Decoding & Printing JWT Strings
 
 Function `auth_decode_jwt` can be used to decode an arbitrary JWT token; e.g.:
 
@@ -51,7 +62,7 @@ gzSraSYS8EXBxLN_oWnFSRgCzcmJmMjLiuyu5CSpyHI
 ------------------------------------------------------------
 ```
 
-# Server Authentication
+# Environment Variables
 
 Functions `auth_login` and `auth_verify` use the following environment
 variables to connect to an authentication server:
@@ -68,9 +79,11 @@ variables to connect to an authentication server:
 | `AUTH_SCOPE`                | e.g. may need "openid" if AUTH_VENDOR=keycloak       |
 | `AUTH_ALLOW_INSECURE_HTTPS` | set to "true" for host with non-CA HTTPS certificate |
 
+# Get & Verify Server Tokens
+
 To perform authentication server login and verification calls:
 
-1. Set environment variables for the target server:
+1. Set [Environment Variables](#environment-variables) for the target server:
 
     ```bash
     # e.g. Keycloak 22.0.3 host in initial state (only default realm)
@@ -78,7 +91,7 @@ To perform authentication server login and verification calls:
     AUTH_VENDOR='keycloak'
     AUTH_REALM='master'
     AUTH_USERNAME='admin'
-    AUTH_PASSWORD='...redacted...'
+    read -r -s AUTH_PASSWORD
     AUTH_CLIENT_ID='admin-cli'
     AUTH_SCOPE='openid'
     ```
@@ -89,7 +102,7 @@ To perform authentication server login and verification calls:
     AUTH_VENDOR='rh-sso'
     AUTH_REALM='master'
     AUTH_USERNAME='admin'
-    AUTH_PASSWORD='...redacted...'
+    read -r -s AUTH_PASSWORD
     AUTH_CLIENT_ID='admin-cli'
     ```
 
