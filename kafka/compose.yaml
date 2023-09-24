@@ -1,0 +1,73 @@
+# docker compose up --detach; docker compose logs --follow
+# docker compose down --volumes
+networks:
+  kafka-network:
+services:
+  kafka:
+    networks:
+      - kafka-network
+    depends_on:
+      - zookeeper
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "9092:9092"
+    entrypoint:
+      - bash
+      - -c
+      - |
+        sed -i \
+          's/^zookeeper.connect=localhost:2181/zookeeper.connect=zookeeper:2181/' \
+          config/server.properties
+        bin/kafka-server-start.sh config/server.properties
+  zookeeper:
+    networks:
+      - kafka-network
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "2181:2181"
+    entrypoint:
+      - bash
+      - -c
+      - bin/zookeeper-server-start.sh config/zookeeper.properties
+  producer:
+    depends_on:
+      - kafka
+    build:
+      context: .
+      dockerfile: DockerfileDevEnv
+    networks:
+      - kafka-network
+    volumes:
+      - ./python:/examples/python:ro
+    entrypoint: ["/bin/bash"]
+    command:
+      - -c
+      - |
+        source /workdir/python-venv-dev/bin/activate
+        while true; do 
+          date
+          sleep 5
+          python3 -u /examples/python/producer.py \
+            --max-random-message-count 15
+        done
+  consumer:
+    depends_on:
+      - kafka
+    build:
+      context: .
+      dockerfile: DockerfileDevEnv
+    networks:
+      - kafka-network
+    volumes:
+      - ./python:/examples/python:ro
+    entrypoint: ["/bin/bash"]
+    command:
+      - -c
+      - |
+        source /workdir/python-venv-dev/bin/activate
+        python3 -u /examples/python/consumer.py
+    restart: unless-stopped

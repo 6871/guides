@@ -1,0 +1,2 @@
+# pip install --require-virtualenv --requirement requirements.txt
+confluent-kafka

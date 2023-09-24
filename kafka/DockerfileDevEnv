@@ -1,0 +1,22 @@
+# docker build --tag dev-env:0.0.0 --file ./DockerfileDevEnv .
+# docker rmi dev-env:0.0.0
+# docker run --rm --tty --interactive dev-env:0.0.0
+FROM ubuntu:latest
+
+RUN apt-get update \
+    && apt-get install --yes \
+        python3 \
+        python3-venv \
+        openjdk-19-jdk-headless \
+        openssh-client \
+        curl \
+        dnsutils \
+        iputils-ping \
+        iproute2 \
+    && mkdir /workdir \
+    && python3 -m venv /workdir/python-venv-dev
+
+WORKDIR /workdir
+
+RUN bash -c 'source /workdir/python-venv-dev/bin/activate \
+&& pip3 install confluent-kafka requests'
