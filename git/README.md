@@ -39,6 +39,7 @@ gpg --list-keys
 # Set GPG config for user's commits
 git config user.signingkey "${KEY_SIGNATURE:?}"
 git config commit.gpgsign true
+git config tag.gpgsign true
 ```
 
 ```bash
@@ -142,6 +143,11 @@ For more information on GPG see:
     
     # To set for all repositories, use --global:
     git config --global commit.gpgsign true
+    ```
+   
+    ```bash
+    # To sign annotated tags by default
+    git config tag.gpgsign true
     ```
 
 4. Optionally set gpg program location:
