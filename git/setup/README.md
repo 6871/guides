@@ -1,4 +1,4 @@
-# Git
+# Git Setup
 
 * [Setup Summary](#setup-summary)
 * [Properties](#properties)
@@ -89,10 +89,10 @@ This guide uses GPG for Git commit signing.
 
 For more information on GPG see:
 
-* [GPG](../gpg/README.md)
-    * [Key Management](../gpg/README.md#key-management)
-        * [Creating Key Pairs](../gpg/README.md#creating-key-pairs)
-        * [Exporting Keys](../gpg/README.md#exporting-keys)
+* [GPG](../../gpg/README.md)
+    * [Key Management](../../gpg/README.md#key-management)
+        * [Creating Key Pairs](../../gpg/README.md#creating-key-pairs)
+        * [Exporting Keys](../../gpg/README.md#exporting-keys)
 
 ## Server Setup
 
