@@ -72,9 +72,9 @@
    To check compiler version:
 
     ```bash
-    JAVA_HOME="${PWD:?}/jdk-17.0.2.jdk/Contents/Home/bin"
+    JAVA_HOME="${PWD:?}/jdk-17.0.2.jdk/Contents/Home"
     # Note, need to add downloaded version to path before macOS's /usr/bin/java
-    PATH="${JAVA_HOME:?}:$PATH"
+    PATH="${JAVA_HOME:?}/bin:$PATH"
     javac --version
     ```
 
