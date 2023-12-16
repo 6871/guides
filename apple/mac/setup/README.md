@@ -75,12 +75,16 @@ Create machine/user-specific SSH key pair:
 
 1. Add required `.zprofile` content; e.g.:
 
+    ℹ️ `.zprofile` is read and executed on user login only
+
     ```bash
     # Add Visual Studio Code (code)
     export PATH="$PATH:$HOME/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
     ```
 
 2. Add required `.zshrc` content:
+
+    ℹ️ `.zshrc` is read and executed when a new interactive shell starts
 
     ```bash
     cat <<EOF >> ~/.zshrc
