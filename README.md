@@ -2,6 +2,7 @@
 
 | Guide                                                          | Description                                                                                               |
 |----------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------|
+| [Apple : Mac : Setup](apple/mac/setup/README.md)               | Common Mac setup tasks                                                                                    |
 | [Authentication : Bash](authentication/bash/README.md)         | CLI functions to get, view and verify authentication tokens                                               |
 | [Authentication : Keycloak](authentication/keycloak/README.md) | Run local Keycloak IAM server; get, view and validate OIDC JWT tokens from the command line               |
 | [Authentication : RH-SSO](authentication/rh-sso/README.md)     | Run local Red Hat Single Sign-On IAM server; get, view and validate OIDC JWT tokens from the command line |
