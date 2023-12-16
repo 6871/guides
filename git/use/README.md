@@ -1,6 +1,7 @@
 # Using Git
 
 * [Branching](#branching)
+* [Cloning Multiple Repositories](#cloning-multiple-repositories)
 * [Merging](#merging)
 * [Rebasing](#rebasing)
 * [Stashing](#stashing)
@@ -31,6 +32,23 @@ git push origin --delete "${BRANCH_NAME:?}"
 git remote prune origin --dry-run
 git remote prune origin
 ```
+
+## Cloning Multiple Repositories
+
+```bash
+# Assumes ~/.ssh/config with:
+# Host 6871.github.com
+#   Hostname github.com
+#   IdentityFile ~/.ssh/...
+GITHUB_ACCOUNT='6871'
+GITHUB_ACCOUNT_REPO_LIST=('guides' 'scripts')
+
+for GITHUB_ACCOUNT_REPO in "${GITHUB_ACCOUNT_REPO_LIST[@]}"; do
+  git clone "git@${GITHUB_ACCOUNT:?}.github.com:${GITHUB_ACCOUNT:?}/${GITHUB_ACCOUNT_REPO:?}.git"
+done
+```
+
+ℹ️ For details about the above SSH host name configuration see: [../setup/README.md#using-multiple-github-accounts-ssh](../setup/README.md#using-multiple-github-accounts-ssh)
 
 ## Merging
 
