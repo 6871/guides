@@ -1,5 +1,10 @@
 # GPG
 
+* [Install GPGTools (macOS)](#install-gpgtools-macos)
+    * [Download](#download)
+    * [Verify SHA Checksum](#verify-sha-checksum)
+    * [Verify GPG Signature (Using Docker)](#verify-gpg-signature-using-docker)
+    * [Run Installer](#run-installer)
 * [Key Management](#key-management)
     * [Creating Key Pairs](#creating-key-pairs)
     * [Listing Keys](#listing-keys)
@@ -17,6 +22,118 @@
         * [Verifying](#verifying)
 * [Inspecting GPG Files](#inspecting-gpg-files)
 * [References](#references)
+
+# Install GPGTools (macOS)
+
+Apple provide some notes on using GPG here:
+
+* https://support.apple.com/en-us/HT201214
+
+At the time of writing the above article references:
+
+* https://gpgtools.org
+* https://www.gnupg.org
+
+## Download
+
+Go to https://gpgtools.org and download:
+
+* GPG installation file
+* GPG installation GPG signature file
+
+## Verify SHA Checksum
+
+Verify the GPG download's SHA checksum matches the one reported at https://gpgtools.org; i.e. run:
+
+```bash
+shasum -a 256 ~/Downloads/GPG_Suite-2023.3.dmg
+```
+
+## Verify GPG Signature (Using Docker)
+
+To run GPG in a Docker container to verify the GPG install file:
+
+1. Identify GPG install and signature files, and their directory:
+
+    ```bash
+    # Adjust accordingly for your download:
+    GPG_INSTALL_FILE='GPG_Suite-2023.3.dmg'
+    GPG_INSTALL_FILE_SIG="${GPG_INSTALL_FILE:?}.sig"
+    GPG_INSTALL_FILE_DIR="${HOME:?}/Downloads"
+    ```
+
+2. Run a temporary Docker container that mounts `GPG_INSTALL_FILE_DIR` to `/workdir` in the container:
+
+    ```bash
+    docker \
+      run \
+        --name gpg-check \
+        --rm --tty --interactive \
+        --mount "type=bind,source=${GPG_INSTALL_FILE_DIR:?},target=/workdir" \
+        --env "GPG_INSTALL_FILE=${GPG_INSTALL_FILE:?}" \
+        --env "GPG_INSTALL_FILE_SIG=${GPG_INSTALL_FILE_SIG:?}" \
+        --entrypoint bash \
+        --workdir /workdir \
+        ubuntu:latest
+    ```
+
+3. Install `gpg` and `curl` in the above `gpg-check` container:
+
+    ```bash
+    apt update
+    apt install --yes gpg curl
+    ```
+
+    ⚠️ The `gpg` install is only as trustworthy as the container image and `gpg` apt package  
+
+4. Obtain the public key for `team@gpgtools.org`:
+
+    ```bash
+    # Assuming website is not compromised:
+    curl 'https://gpgtools.org/GPGTools-00D026C4.asc' | gpg --import
+    ```
+    
+    ℹ️ The public key could also be loaded from a public keyserver
+
+5. Verify the imported public key:
+
+    ```bash
+    # To view imported key details:
+    gpg --list-keys
+    gpg --list-keys team@gpgtools.org
+    gpg --fingerprint team@gpgtools.org
+    gpg --check-sigs team@gpgtools.org
+    
+    # To view details on public key servers for comparison:
+    gpg --keyserver pgp.mit.edu --fingerprint team@gpgtools.org
+    gpg --keyserver certserver.pgp.com --fingerprint team@gpgtools.org
+    ```
+
+6. Verify the GPG install package:
+
+    ```bash
+    gpg --verify "${GPG_INSTALL_FILE_SIG:?}" "${GPG_INSTALL_FILE:?}"
+    ```
+    
+    ⚠️ The above command will emit a warning; if you really trust the key,
+    suppress the warning with one of the following methods:
+
+    ```bash
+    # Identify key's fingerprint using: gpg --list-keys team@gpgtools.org
+    KEY_FINGERPRINT='85E38F69046B44C1EC9FB07B76D78F0500D026C4'
+   
+    # Tell GPG to trust the above key
+    gpg --trusted-key "${KEY_FINGERPRINT:?}" --verify "${GPG_INSTALL_FILE_SIG:?}" "${GPG_INSTALL_FILE:?}"
+    ```
+
+    ```bash
+    # Set the key's trust level using interactive prompts
+    gpg --edit-key team@gpgtools.org
+    ```
+
+## Run Installer
+
+Only run the GPG installer if the above verification steps are OK.
 
 # Key Management
 
