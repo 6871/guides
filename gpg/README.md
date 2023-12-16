@@ -171,7 +171,7 @@ PUBLIC_KEY_FILENAME="gpg_key_${EMAIL:?}.public"
 PRIVATE_KEY_FILENAME="gpg_key_${EMAIL:?}.private"
 
 # Public key
-gpg --armor --export "${EMAIL:?}" --output "${PUBLIC_KEY_FILENAME:?}"
+gpg --armor --export "${EMAIL:?}" > "${PUBLIC_KEY_FILENAME:?}"
 
 # Export private key
 gpg --armor --export-secret-keys "${EMAIL:?}" > "${PRIVATE_KEY_FILENAME:?}"
