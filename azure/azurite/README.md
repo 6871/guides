@@ -19,7 +19,7 @@ The `azurite` service requires the following settings in [compose.yml](compose.y
 
 Instead of using a custom network and alias, `hostname` could be added to the
 azurite service; i.e. under `services.azurite` add
-`hostname: azurite.example.local.6871.uk`.
+`hostname: azurite.example.local.6871.uk` ([example](https://github.com/6871/guides/blob/4e4cd85e53bfd4c5af46fc286bf8b2abb26e5746/azure/azurite/compose.yml#L32)).
 
 # Example overview
 
