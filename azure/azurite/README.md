@@ -1,8 +1,7 @@
 # Azurite example
 
-A `docker compose` example showing how to run a local Azurite blob service and
-a custom API to generate a URL (with SAS token) that can be used to upload
-files.
+Use `docker compose` to run a local Azurite blob service and custom API that
+generates a URL (with SAS token) that can be used to upload a file.
 
 The following DNS configuration is used to map remote host names to localhost
 (`*.local.6871.uk` maps to `127.0.0.1`):
@@ -53,7 +52,7 @@ From this directory ([azure/azurite](../../azure/azurite)):
     docker compose --env-file azurite.env up
     ```
 
-2. Create a Python virtual environment for the client script: 
+2. Create a Python virtual environment for the example client script:
 
     ```bash
     python3 -m venv .venv-azureite-client
@@ -61,7 +60,7 @@ From this directory ([azure/azurite](../../azure/azurite)):
     pip3 install --requirement client/requirements.txt
     ```
 
-3. Set the target API host:
+3. Run the example client script ([file_tx_rx.py](client/file_tx_rx.py)):
  
     ```bash
     export EXAMPLE_API_HOST='http://api.example.local.6871.uk:5001' 
