@@ -1,24 +1,37 @@
 # Env var values inherited from host (hence values omitted); run with:
 # docker compose --env-file azurite.env up
 #
-# The azurite service seems to need both:
-# 1. hostname: azurite.example.local.6871.uk
-# 2. --disableProductStyleUrl
+# The azurite service needs both:
+# 1. Entry `azurite.example.local.6871.uk` under `services.azurite.networks.azurite_network.aliases`
+# 2. Option --disableProductStyleUrl in its startup command
+#
+# Instead of using a custom network and alias, hostname could be added to the
+# azurite service; i.e. under services.azurite add:
+# hostname: azurite.example.local.6871.uk
 #
 # In shell commands, $ must be escaped using $$.
 volumes:
   azurite_data:
+
+networks:
+  azurite_network:
 
 services:
   azurite:
     image: mcr.microsoft.com/azure-storage/azurite
     depends_on:
       - setup
-    environment:
-      - EXAMPLE_AZURITE_LOG_FILE
     volumes:
       - azurite_data:/data
       - ./log:/example
+    networks:
+      azurite_network:
+        aliases:
+          - azurite.example.local.6871.uk
+    ports:
+      - "10000:10000"
+    environment:
+      - EXAMPLE_AZURITE_LOG_FILE
     command:
       - "sh"
       - "-c"
@@ -29,12 +42,11 @@ services:
           --location=/data \
           --disableProductStyleUrl \
           --debug=$${EXAMPLE_AZURITE_LOG_FILE:?}
-    hostname: azurite.example.local.6871.uk
-    ports:
-      - "10000:10000"
 
   api:
     build: ./api
+    networks:
+      azurite_network:
     ports:
       - "5001:5000"
     environment:
@@ -44,7 +56,9 @@ services:
 
   setup:
     # Create/rotate log file in project's ./log dir for Azurite --debug option.
+    # Doesn't need azurite_network access.
     image: ubuntu
+    network_mode: none
     environment:
       - EXAMPLE_AZURITE_LOG_FILE
     entrypoint: ["/bin/bash"]

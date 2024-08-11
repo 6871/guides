@@ -14,8 +14,12 @@ can change and redirect traffic elsewhere.
 
 The `azurite` service requires the following settings in [compose.yml](compose.yml):
 
-1. `hostname: azurite.example.local.6871.uk`
-2. `--disableProductStyleUrl` ([disable-production-style-url](https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite?tabs=visual-studio%2Cblob-storage#disable-production-style-url))
+1. Entry `azurite.example.local.6871.uk` under `services.azurite.networks.azurite_network.aliases`
+2. Option `--disableProductStyleUrl` in its startup command ([disable-production-style-url](https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite?tabs=visual-studio%2Cblob-storage#disable-production-style-url))
+
+Instead of using a custom network and alias, `hostname` could be added to the
+azurite service; i.e. under `services.azurite` add
+`hostname: azurite.example.local.6871.uk`.
 
 # Example overview
 
@@ -81,7 +85,8 @@ docker compose down
 To remove all local Docker images, volumes and build cache:
 
 ```bash
-docker rmi $(docker images --quiet) 
+docker compose down
+docker rmi $(docker images --quiet)
 docker volume rm azurite_azurite_data
 docker system prune -a --volumes
 ```
