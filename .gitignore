@@ -4,3 +4,5 @@ tmp*
 *.tar*
 .env
 venv/
+azure/azurite/*.zip
+azure/azurite/log/azurite.log*

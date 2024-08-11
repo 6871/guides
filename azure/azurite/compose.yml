@@ -1,0 +1,64 @@
+# Env var values inherited from host (hence values omitted); run with:
+# docker compose --env-file azurite.env up
+#
+# The azurite service seems to need both:
+# 1. hostname: azurite.example.local.6871.uk
+# 2. --disableProductStyleUrl
+#
+# In shell commands, $ must be escaped using $$.
+volumes:
+  azurite_data:
+
+services:
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    depends_on:
+      - setup
+    environment:
+      - EXAMPLE_AZURITE_LOG_FILE
+    volumes:
+      - azurite_data:/data
+      - ./log:/example
+    command:
+      - "sh"
+      - "-c"
+      - |
+        azurite \
+          --blobHost=0.0.0.0 \
+          --blobPort=10000 \
+          --location=/data \
+          --disableProductStyleUrl \
+          --debug=$${EXAMPLE_AZURITE_LOG_FILE:?}
+    hostname: azurite.example.local.6871.uk
+    ports:
+      - "10000:10000"
+
+  api:
+    build: ./api
+    ports:
+      - "5001:5000"
+    environment:
+      - EXAMPLE_AZURE_BLOB_HOST
+      - EXAMPLE_AZURE_ACCOUNT_NAME
+      - EXAMPLE_AZURE_ACCOUNT_KEY
+
+  setup:
+    # Create/rotate log file in project's ./log dir for Azurite --debug option.
+    image: ubuntu
+    environment:
+      EXAMPLE_AZURITE_LOG_FILE: "/example/azurite.log"
+    entrypoint: ["/bin/bash"]
+    command:
+      - "-c"
+      - |
+        printf 'Creating new empty log file for Azurite\n'
+        if [ -f $${EXAMPLE_AZURITE_LOG_FILE:?} ]; then
+          rotated_log_file="$${EXAMPLE_AZURITE_LOG_FILE:?}.$$(date +%s)"
+          mv "$${EXAMPLE_AZURITE_LOG_FILE:?}" "$${rotated_log_file:?}"
+          printf 'Rotated log file %s to %s\n' "$${EXAMPLE_AZURITE_LOG_FILE:?}" "$${rotated_log_file:?}"
+        fi
+        touch "$${EXAMPLE_AZURITE_LOG_FILE:?}"
+        printf 'Created empty log file "%s" for Azurite service to use\n' "$${EXAMPLE_AZURITE_LOG_FILE:?}"
+    volumes:
+      - ./log:/example
+    restart: 'no'
