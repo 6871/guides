@@ -3,6 +3,7 @@
 tmp*
 *.tar*
 .env
-venv/
+.venv*/
+venv*/
 azure/azurite/*.zip
 azure/azurite/log/azurite.log*
