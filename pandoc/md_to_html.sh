@@ -3,7 +3,7 @@ function md-to-html {
   # Run Pandoc in a Docker container to convert a host markdown file to html.
   if [ $# -lt 1 ]; then
     printf "Error: No input file specified.\n" >&2
-    printf 'Usage: md-file-to-html' >&2
+    printf 'Usage: md-to-html' >&2
     printf ' <input-file>' >&2
     printf ' [--output-file <output-file>]' >&2
     printf ' [--dark]' >&2
