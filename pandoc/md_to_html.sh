@@ -2,15 +2,15 @@
 function md-to-html {
   # Run Pandoc in a Docker container to convert a host markdown file to html.
   if [ $# -lt 1 ]; then
-    printf "Error: No input file specified.\n"
-    printf 'Usage: md-file-to-html'
-    printf ' <input-file>'
-    printf ' [--output-file <output-file>]'
-    printf ' [--dark]'
-    printf ' [--light]'
-    printf ' [--css-body-max-width <value>]'
-    printf ' [--css-pre-white-space <value>]'
-    printf ' [--css-pre-max-width <value>]\n'
+    printf "Error: No input file specified.\n" >&2
+    printf 'Usage: md-file-to-html' >&2
+    printf ' <input-file>' >&2
+    printf ' [--output-file <output-file>]' >&2
+    printf ' [--dark]' >&2
+    printf ' [--light]' >&2
+    printf ' [--css-body-max-width <value>]' >&2
+    printf ' [--css-pre-white-space <value>]' >&2
+    printf ' [--css-pre-max-width <value>]\n' >&2
     return 64
   fi
 
