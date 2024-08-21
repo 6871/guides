@@ -11,28 +11,35 @@
       padding: 1rem;
       font-family: 'Noto Sans', sans-serif;
       word-wrap: break-word;
+      line-height: 1.4;
       background-color: #1e1e1e;
-      color: #A9A9A9;
+      color: #b3b3b3;
     }
 
-    pre, code {
+    pre {
       font-family: monospace;
-      white-space: $if(css_code_white_space)$$css_code_white_space$$else$none$endif$;
-      max-width: $if(css_code_max_width)$$css_code_max_width$$else$none$endif$;
+      white-space: $if(css_pre_white_space)$$css_pre_white_space$$else$none$endif$;
+      max-width: $if(css_pre_max_width)$$css_pre_max_width$$else$none$endif$;
       overflow-x: auto;
       background-color: #2d2d2d;
       margin: 1em 0;
-      padding: 0.5em;
+      padding: 1em;
       border: none;
-      line-height: 1.5;
-      color: #A9A9A9;
+      line-height: 1.4;
+      color: #b3b3b3;
     }
 
     code {
+      font-family: monospace;
       padding: 0.15em 0.4em;
       background-color: #2d2d2d;
-      color: #A9A9A9;
+      color: #b3b3b3;
     }
+
+    pre code {
+      padding: 0; /* prevent first line of pre blocks indenting */
+    }
+
 
     table {
       width: 100%;
@@ -41,7 +48,7 @@
       font-size: 1em;
       font-family: 'Noto Sans', sans-serif;
       background-color: #2d2d2d;
-      color: #A9A9A9;
+      color: #b3b3b3;
     }
 
     th, td {
@@ -67,6 +74,14 @@
     a:hover {
       color: #58A6FF;
       text-decoration: underline;
+    }
+
+    li {
+      margin-bottom: 0.125em;
+    }
+
+    li:last-child {
+      margin-bottom: 0;
     }
   </style>
 </head>

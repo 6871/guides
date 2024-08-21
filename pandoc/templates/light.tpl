@@ -11,22 +11,29 @@
       padding: 1rem;
       font-family: 'Noto Sans', sans-serif;
       word-wrap: break-word;
+      line-height: 1.4;
     }
 
-    pre, code {
+    pre {
       font-family: monospace;
-      white-space: $if(css_code_white_space)$$css_code_white_space$$else$none$endif$;
-      max-width: $if(css_code_max_width)$$css_code_max_width$$else$none$endif$;
+      white-space: $if(css_pre_white_space)$$css_pre_white_space$$else$none$endif$;
+      max-width: $if(css_pre_max_width)$$css_pre_max_width$$else$none$endif$;
       overflow-x: auto;
       background-color: #eeeeee;
       margin: 1em 0;
-      padding: 0.5em;
+      padding: 1em;
       border: none;
-      line-height: 1.5;
+      line-height: 1.4;
     }
 
     code {
+      font-family: monospace;
       padding: 0.15em 0.4em;
+      background-color: #eeeeee;
+    }
+
+    pre code {
+      padding: 0; /* prevent first line of pre blocks indenting */
     }
 
     table {
@@ -59,6 +66,14 @@
 
     a:hover {
         text-decoration: underline;
+    }
+
+    li {
+      margin-bottom: 0.125em;
+    }
+
+    li:last-child {
+      margin-bottom: 0;
     }
   </style>
 </head>

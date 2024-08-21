@@ -9,8 +9,8 @@ function md-to-html {
     printf ' [--dark]'
     printf ' [--light]'
     printf ' [--css-body-max-width <value>]'
-    printf ' [--css-code-white-space <value>]'
-    printf ' [--css-code-max-width <value>]\n'
+    printf ' [--css-pre-white-space <value>]'
+    printf ' [--css-pre-max-width <value>]\n'
     return 64
   fi
 
@@ -33,8 +33,8 @@ function md-to-html {
   fi
 
   local css_body_max_width='none'  # uses available width
-  local css_code_white_space='none'  # use pre-wrap to wrap instead of scroll
-  local css_code_max_width='none'  # uses available width
+  local css_pre_white_space='pre'  # use pre-wrap to wrap instead of scroll
+  local css_pre_max_width='none'  # uses available width
   local css_template_dir='/pandoc/templates/'
   local css_template_dark="${css_template_dir:?}dark.tpl"
   local css_template_light="${css_template_dir:?}light.tpl"
@@ -67,19 +67,19 @@ function md-to-html {
         shift 1
         ;;
       --css-code-white-space)
-        css_code_white_space="${2:?}"
+        css_pre_white_space="${2:?}"
         shift 2
         ;;
       --css-code-white-space=*)
-        css_code_white_space="${1#*=}"
+        css_pre_white_space="${1#*=}"
         shift 1
         ;;
       --css-code-max-width)
-        css_code_max_width="${2:?}"
+        css_pre_max_width="${2:?}"
         shift 2
         ;;
       --css-code-max-width=*)
-        css_code_max_width="${1#*=}"
+        css_pre_max_width="${1#*=}"
         shift 1
         ;;
       *)
@@ -116,8 +116,8 @@ function md-to-html {
         --standalone \
         --metadata title="$(basename -- "${input_file:?}")" \
         --metadata css_body_max_width="${css_body_max_width:?}" \
-        --metadata css_code_white_space="${css_code_white_space:?}" \
-        --metadata css_code_max_width="${css_code_max_width:?}" \
+        --metadata css_pre_white_space="${css_pre_white_space:?}" \
+        --metadata css_pre_max_width="${css_pre_max_width:?}" \
         /host/input_file \
   > "${output_file:?}"
 }
