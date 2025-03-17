@@ -32,7 +32,7 @@
 #     Optional. Installs the specified AWS CLI version. When omitted this
 #     defaults to the latest version on the AWS CLI GitHub release page.
 # --dir=directory, --dir directory
-#     Optional. The root directory in which install directories are created
+#     Optional. The root directory in which an install directory is created
 #     for each AWS CLI version the script installs. This directory must
 #     already exist. Defaults to "$HOME/Applications/aws/cli" when omitted.
 set -o errexit -o nounset -o pipefail
