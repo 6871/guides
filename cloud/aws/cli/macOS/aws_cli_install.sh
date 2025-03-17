@@ -14,9 +14,9 @@
 # will prompt for the sudo password, use sudo to create the symlinks, then
 # revoke the assumed sudo access.
 #
-# To re-install a previously installed version, the install directory and
-# symlinks in /usr/local/bin must be manually deleted first. If required, the
-# script will print the delete commands, but for safety, it does not run them.
+# To re-install a previously installed version, the install directory, and the
+# symlinks in /usr/local/bin, must be manually deleted first. The script will
+# print the delete commands, but for safety, it does not run them.
 #
 # Synopsis:
 # ./aws_cli_install.sh [--list-latest] [--list-releases] [--version <VERSION>] [--dir <DIRECTORY>]
