@@ -7,7 +7,8 @@
 | [Authentication : Bash](authentication/bash/README.md)                 | CLI functions to get, view and verify authentication tokens.                                               |
 | [Authentication : Keycloak](authentication/keycloak/README.md)         | Run local Keycloak IAM server; get, view and validate OIDC JWT tokens from the command line.               |
 | [Authentication : RH-SSO](authentication/rh-sso/README.md)             | Run local Red Hat Single Sign-On IAM server; get, view and validate OIDC JWT tokens from the command line. |
-| [Azure : Azurite](azure/azurite/README.md)                             | Run local Azurite blob service with a custom API to generate a SAS token URL for file upload.              |
+| [Cloud : AWS : CLI : macOS](cloud/aws/cli/macOS/README.md)             | Automated AWS CLI install and update on macOS.                                                             |
+| [Cloud : Azure : Azurite](cloud/azure/azurite/README.md)               | Run local Azurite blob service with a custom API to generate a SAS token URL for file upload.              |
 | [Git : Setup](git/setup/README.md)                                     | Properties; GPG commit signing; SSH config for multiple GitHub accounts.                                   |
 | [Git : Use](git/use/README.md)                                         | Branching; Merging; Stashing; Tagging; Undoing Changes; Viewing History.                                   |
 | [GPG](gpg/README.md)                                                   | Installing; key management; encrypting and signing data.                                                   |
